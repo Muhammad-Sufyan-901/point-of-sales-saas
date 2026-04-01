@@ -6,12 +6,17 @@
     "guidelines": true,
     "mcp": true,
     "nightwatch_mcp": false,
+    "packages": [
+        "laravel/fortify",
+        "fruitcake/laravel-debugbar"
+    ],
     "sail": false,
     "skills": [
         "laravel-best-practices",
         "wayfinder-development",
         "pest-testing",
         "inertia-react-development",
-        "tailwindcss-development"
+        "tailwindcss-development",
+        "fortify-development"
     ]
 }

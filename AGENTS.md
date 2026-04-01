@@ -11,6 +11,7 @@ This application is a Laravel application and its main Laravel ecosystems packag
 
 - php - 8.4
 - inertiajs/inertia-laravel (INERTIA_LARAVEL) - v3
+- laravel/fortify (FORTIFY) - v1
 - laravel/framework (LARAVEL) - v13
 - laravel/prompts (PROMPTS) - v0
 - laravel/wayfinder (WAYFINDER) - v0
@@ -37,6 +38,7 @@ This project has domain-specific skills available. You MUST activate the relevan
 - `pest-testing` — Use this skill for Pest PHP testing in Laravel projects only. Trigger whenever any test is being written, edited, fixed, or refactored — including fixing tests that broke after a code change, adding assertions, converting PHPUnit to Pest, adding datasets, and TDD workflows. Always activate when the user asks how to write something in Pest, mentions test files or directories (tests/Feature, tests/Unit, tests/Browser), or needs browser testing, smoke testing multiple pages for JS errors, or architecture tests. Covers: it()/expect() syntax, datasets, mocking, browser testing (visit/click/fill), smoke testing, arch(), Livewire component tests, RefreshDatabase, and all Pest 4 features. Do not use for factories, seeders, migrations, controllers, models, or non-test PHP code.
 - `inertia-react-development` — Develops Inertia.js v3 React client-side applications. Activates when creating React pages, forms, or navigation; using <Link>, <Form>, useForm, useHttp, setLayoutProps, or router; working with deferred props, prefetching, optimistic updates, instant visits, or polling; or when user mentions React with Inertia, React pages, React forms, or React navigation.
 - `tailwindcss-development` — Always invoke when the user's message includes 'tailwind' in any form. Also invoke for: building responsive grid layouts (multi-column card grids, product grids), flex/grid page structures (dashboards with sidebars, fixed topbars, mobile-toggle navs), styling UI components (cards, tables, navbars, pricing sections, forms, inputs, badges), adding dark mode variants, fixing spacing or typography, and Tailwind v3/v4 work. The core use case: writing or fixing Tailwind utility classes in HTML templates (Blade, JSX, Vue). Skip for backend PHP logic, database queries, API routes, JavaScript with no HTML/CSS component, CSS file audits, build tool configuration, and vanilla CSS.
+- `fortify-development` — ACTIVATE when the user works on authentication in Laravel. This includes login, registration, password reset, email verification, two-factor authentication (2FA/TOTP/QR codes/recovery codes), profile updates, password confirmation, or any auth-related routes and controllers. Activate when the user mentions Fortify, auth, authentication, login, register, signup, forgot password, verify email, 2FA, or references app/Actions/Fortify/, CreateNewUser, UpdateUserProfileInformation, FortifyServiceProvider, config/fortify.php, or auth guards. Fortify is the frontend-agnostic authentication backend for Laravel that registers all auth routes and controllers. Also activate when building SPA or headless authentication, customizing login redirects, overriding response contracts like LoginResponse, or configuring login throttling. Do NOT activate for Laravel Passport (OAuth2 API tokens), Socialite (OAuth social login), or non-auth Laravel features.
 
 ## Conventions
 
@@ -194,5 +196,79 @@ Use Wayfinder to generate TypeScript functions for Laravel routes. Import from `
 # Inertia + React
 
 - IMPORTANT: Activate `inertia-react-development` when working with Inertia React client-side patterns.
+
+=== fruitcake/laravel-debugbar rules ===
+
+## Laravel Debugbar
+
+Laravel Debugbar stores data from each request (queries, exceptions, views, routes, mail, etc.) for review via Artisan commands.
+
+### Finding Requests
+
+<code-snippet name="Find requests" lang="bash">
+
+# List recent requests (shows summary with status, duration, memory, query count)
+
+php artisan debugbar:find
+
+# Filter by URI pattern (fnmatch) and/or HTTP method
+
+php artisan debugbar:find --uri="/api/*" --method=POST
+
+# Only show requests with issues (exceptions, slow queries, duplicates, errors)
+
+php artisan debugbar:find --issues --max=50
+
+# Customize issue thresholds (defaults: --min-queries=50, --min-duration=1000, --min-duplicates=2)
+
+php artisan debugbar:find --issues --min-queries=10 --min-duration=500
+
+# Threshold options also work standalone, filtering on just that criteria
+
+php artisan debugbar:find --min-queries=20
+</code-snippet>
+
+`--issues` flags: exceptions, non-2xx status, high query count, slow queries, duplicate query groups, slow request duration, and failed queries. Issue filtering applies on top of the fetched result set — increase `--max` to scan further back.
+
+### Inspecting a Request
+
+<code-snippet name="Inspect request" lang="bash">
+
+# Summary of all collectors (available collectors depend on config)
+
+php artisan debugbar:get latest
+php artisan debugbar:get {id}
+
+# Full data for a specific collector
+
+php artisan debugbar:get {id} --collector=exceptions
+</code-snippet>
+
+Use the collector name from the summary table. Common ones by issue type:
+- **Error/500** → `exceptions` · **Slow page** → `queries`, `time` · **Auth** → `auth`, `gate` · **Cache** → `cache`
+
+### Analyzing Queries
+
+<code-snippet name="Query analysis" lang="bash">
+
+# Overview with duplicate detection and slow query flags
+
+php artisan debugbar:queries {id}
+
+# Backtrace and params for a specific statement
+
+php artisan debugbar:queries {id} --statement=N
+
+# EXPLAIN plan or re-execute a SELECT
+
+php artisan debugbar:queries {id} --statement=N --explain
+php artisan debugbar:queries {id} --statement=N --result
+</code-snippet>
+
+Duplicate queries are a strong N+1 signal. Use `--statement=N` to get the backtrace and find the origin.
+
+### Other Commands
+
+- `debugbar:clear` — Clear all stored debugbar data.
 
 </laravel-boost-guidelines>
