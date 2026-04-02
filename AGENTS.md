@@ -39,6 +39,8 @@ This project has domain-specific skills available. You MUST activate the relevan
 - `inertia-react-development` — Develops Inertia.js v3 React client-side applications. Activates when creating React pages, forms, or navigation; using <Link>, <Form>, useForm, useHttp, setLayoutProps, or router; working with deferred props, prefetching, optimistic updates, instant visits, or polling; or when user mentions React with Inertia, React pages, React forms, or React navigation.
 - `tailwindcss-development` — Always invoke when the user's message includes 'tailwind' in any form. Also invoke for: building responsive grid layouts (multi-column card grids, product grids), flex/grid page structures (dashboards with sidebars, fixed topbars, mobile-toggle navs), styling UI components (cards, tables, navbars, pricing sections, forms, inputs, badges), adding dark mode variants, fixing spacing or typography, and Tailwind v3/v4 work. The core use case: writing or fixing Tailwind utility classes in HTML templates (Blade, JSX, Vue). Skip for backend PHP logic, database queries, API routes, JavaScript with no HTML/CSS component, CSS file audits, build tool configuration, and vanilla CSS.
 - `fortify-development` — ACTIVATE when the user works on authentication in Laravel. This includes login, registration, password reset, email verification, two-factor authentication (2FA/TOTP/QR codes/recovery codes), profile updates, password confirmation, or any auth-related routes and controllers. Activate when the user mentions Fortify, auth, authentication, login, register, signup, forgot password, verify email, 2FA, or references app/Actions/Fortify/, CreateNewUser, UpdateUserProfileInformation, FortifyServiceProvider, config/fortify.php, or auth guards. Fortify is the frontend-agnostic authentication backend for Laravel that registers all auth routes and controllers. Also activate when building SPA or headless authentication, customizing login redirects, overriding response contracts like LoginResponse, or configuring login throttling. Do NOT activate for Laravel Passport (OAuth2 API tokens), Socialite (OAuth social login), or non-auth Laravel features.
+- `shadcn-development` — Use this skill when working with Shadcn UI components in React. Trigger when: creating or editing Shadcn components, using <Card>, <Button>, <Input>, <Badge>, <Dialog>, <Table>, or any Shadcn component; customizing component props, variants, or slots; integrating Shadcn with Tailwind CSS; or fixing styling issues in Shadcn components. Covers: component usage, props customization, styling with Tailwind, theme integration, and accessibility best practices for Shadcn components. Do not use for non-Shadcn UI components, backend logic, or general React development.
+- `vercel-react-best-practices` — Use this skill for React Server Components (RSC) and client components rendered during SSR. Trigger when: creating or editing React components that run on the server, fetching data in server components, using async components, working with React Server Actions, implementing streaming with Suspense, handling server-side form submissions, or optimizing data fetching in React applications. Covers: component composition, parallel data fetching, server-side caching, state management in RSC, serialization, error boundaries, and best practices for React on Vercel. Do not use for backend logic outside React, non-React UI frameworks, or general React development that doesn't involve SSR or RSC.
 
 ## Conventions
 
@@ -104,7 +106,7 @@ This project has domain-specific skills available. You MUST activate the relevan
 
 - Execute PHP in app context for debugging and testing code. Do not create models without user approval, prefer tests with factories instead. Prefer existing Artisan commands over custom tinker code.
 - Always use single quotes to prevent shell expansion: `php artisan tinker --execute 'Your::code();'`
-  - Double quotes for PHP strings inside: `php artisan tinker --execute 'User::where("active", true)->count();'`
+- Double quotes for PHP strings inside: `php artisan tinker --execute 'User::where("active", true)->count();'`
 
 === php rules ===
 
@@ -213,7 +215,7 @@ php artisan debugbar:find
 
 # Filter by URI pattern (fnmatch) and/or HTTP method
 
-php artisan debugbar:find --uri="/api/*" --method=POST
+php artisan debugbar:find --uri="/api/\*" --method=POST
 
 # Only show requests with issues (exceptions, slow queries, duplicates, errors)
 
@@ -245,6 +247,7 @@ php artisan debugbar:get {id} --collector=exceptions
 </code-snippet>
 
 Use the collector name from the summary table. Common ones by issue type:
+
 - **Error/500** → `exceptions` · **Slow page** → `queries`, `time` · **Auth** → `auth`, `gate` · **Cache** → `cache`
 
 ### Analyzing Queries
