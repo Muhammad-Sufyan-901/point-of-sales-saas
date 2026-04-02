@@ -22,10 +22,10 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - laravel/sail (SAIL) - v1
 - pestphp/pest (PEST) - v4
 - phpunit/phpunit (PHPUNIT) - v12
-- \@inertiajs/react (INERTIA_REACT) - v3
+- @inertiajs/react (INERTIA_REACT) - v3
 - react (REACT) - v19
 - tailwindcss (TAILWINDCSS) - v4
-- \@laravel/vite-plugin-wayfinder (WAYFINDER_VITE) - v0
+- @laravel/vite-plugin-wayfinder (WAYFINDER_VITE) - v0
 - eslint (ESLINT) - v9
 - prettier (PRETTIER) - v3
 
@@ -41,6 +41,8 @@ This project has domain-specific skills available. You MUST activate the relevan
 - `fortify-development` — ACTIVATE when the user works on authentication in Laravel. This includes login, registration, password reset, email verification, two-factor authentication (2FA/TOTP/QR codes/recovery codes), profile updates, password confirmation, or any auth-related routes and controllers. Activate when the user mentions Fortify, auth, authentication, login, register, signup, forgot password, verify email, 2FA, or references app/Actions/Fortify/, CreateNewUser, UpdateUserProfileInformation, FortifyServiceProvider, config/fortify.php, or auth guards. Fortify is the frontend-agnostic authentication backend for Laravel that registers all auth routes and controllers. Also activate when building SPA or headless authentication, customizing login redirects, overriding response contracts like LoginResponse, or configuring login throttling. Do NOT activate for Laravel Passport (OAuth2 API tokens), Socialite (OAuth social login), or non-auth Laravel features.
 - `shadcn-development` — Use this skill when working with Shadcn UI components in React. Trigger when: creating or editing Shadcn components, using <Card>, <Button>, <Input>, <Badge>, <Dialog>, <Table>, or any Shadcn component; customizing component props, variants, or slots; integrating Shadcn with Tailwind CSS; or fixing styling issues in Shadcn components. Covers: component usage, props customization, styling with Tailwind, theme integration, and accessibility best practices for Shadcn components. Do not use for non-Shadcn UI components, backend logic, or general React development.
 - `vercel-react-best-practices` — Use this skill for React Server Components (RSC) and client components rendered during SSR. Trigger when: creating or editing React components that run on the server, fetching data in server components, using async components, working with React Server Actions, implementing streaming with Suspense, handling server-side form submissions, or optimizing data fetching in React applications. Covers: component composition, parallel data fetching, server-side caching, state management in RSC, serialization, error boundaries, and best practices for React on Vercel. Do not use for backend logic outside React, non-React UI frameworks, or general React development that doesn't involve SSR or RSC.
+- `../app/DESIGN_SYSTEM.md` — ACTIVATE WHENEVER creating, modifying, or styling any React UI components, layouts, or pages. This skill enforces the strict POS Generator SaaS design system. You MUST override default Tailwind or Shadcn styles with the specific hex codes, typography sizes, rounded corners, and layout spacings defined in the project's Design System Rules. Never use generic styling if a specific rule exists in the design system.
+- `../app/DATABASE_SCHEMA.md` — ACTIVATE WHENEVER creating, modifying, or styling any database tables, columns, relationships, or migrations. This skill enforces the strict POS Generator SaaS database schema. You MUST follow the database schema defined in the project's Database Schema Rules. Never create or modify database tables without following the database design rules.
 
 ## Conventions
 
@@ -215,7 +217,7 @@ php artisan debugbar:find
 
 # Filter by URI pattern (fnmatch) and/or HTTP method
 
-php artisan debugbar:find --uri="/api/\*" --method=POST
+php artisan debugbar:find --uri="/api/*" --method=POST
 
 # Only show requests with issues (exceptions, slow queries, duplicates, errors)
 
@@ -273,5 +275,36 @@ Duplicate queries are a strong N+1 signal. Use `--statement=N` to get the backtr
 ### Other Commands
 
 - `debugbar:clear` — Clear all stored debugbar data.
+
+=== pos-design-system rules ===
+
+# POS Generator SaaS Design System (Notion x Shadcn Hybrid)
+
+When the `pos-design-system` skill is activated or when writing any UI code, you MUST strictly adhere to the following visual standards, combining Notion's warm minimalism with Shadcn UI's component architecture.
+
+## 1. Strict Semantic Token Usage (NO Hardcoded Colors)
+
+- **Use Theme Tokens:** You MUST use semantic CSS variable tokens via Tailwind classes (e.g., `bg-primary`, `text-primary-foreground`, `bg-secondary`, `text-muted-foreground`, `bg-destructive`, `border-border`, `bg-card`, `bg-background`).
+- **NO Tailwind Color Scales or Hex Codes:** DO NOT use default Tailwind color classes (e.g., `bg-blue-500`, `text-gray-700`, `bg-red-600`) or raw hex codes (e.g., `bg-[#0075de]`) directly in JSX/TSX. Assume the warm neutrals and Notion Blue accent are already correctly mapped to the CSS variables in `globals.css` and `tailwind.config.ts`.
+
+## 2. Typography (Geist / Inter)
+
+- **Headings (H1/H2):** Use bold/semibold weights with tight letter-spacing (`tracking-tight` or `tracking-tighter`) and tight line-heights (`leading-none` or `leading-tight`).
+- **Body Text:** Use `text-base` or `text-sm`. Use `font-medium` for UI interactive elements and `font-normal` for general reading.
+- **Badges/Micro Text:** Use `text-xs font-semibold tracking-wide` (positive letter-spacing) for maximum legibility at small sizes.
+
+## 3. Spacing, Depth & Borders
+
+- **Spacing Scale:** Strictly follow the 8-point base grid (e.g., `p-4`, `p-6`, `gap-4`, `gap-6`).
+- **Whisper Borders:** Use `border border-border` to create structure without visual weight. Avoid thick borders.
+- **Shadows:** Rely on soft, multi-layered ambient shadows provided by the theme (e.g., `shadow-sm`, `shadow-md`). Never use harsh, single-layer drop shadows.
+
+## 4. Component Anatomy & Interactions (Shadcn Overrides)
+
+- **Interactive Feedback:** Buttons and clickable elements MUST have tactile feedback using `active:scale-95`. Focus states must use a clear focus ring (e.g., `focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2`).
+- **Buttons:** Radius `rounded-md` (4px). Primary uses `bg-primary text-primary-foreground`. Secondary/Ghost uses translucent backgrounds (`hover:bg-secondary`).
+- **Cards:** Radius `rounded-xl` (12px) or `rounded-2xl` (16px) using `bg-card border-border text-card-foreground`. Product images inside cards must have top-rounded corners (`rounded-t-xl`).
+- **Inputs & Forms:** Radius `rounded-md` (4px), `bg-background border-input`. Placeholder text must use `placeholder:text-muted-foreground`.
+- **Badges:** Full pill radius (`rounded-full`), padded (`px-2 py-0.5`). Status badges should use tinted backgrounds with primary text (e.g., `bg-primary/10 text-primary`).
 
 </laravel-boost-guidelines>
