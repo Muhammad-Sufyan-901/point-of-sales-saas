@@ -43,6 +43,7 @@ This project has domain-specific skills available. You MUST activate the relevan
 - `vercel-react-best-practices` — Use this skill for React Server Components (RSC) and client components rendered during SSR. Trigger when: creating or editing React components that run on the server, fetching data in server components, using async components, working with React Server Actions, implementing streaming with Suspense, handling server-side form submissions, or optimizing data fetching in React applications. Covers: component composition, parallel data fetching, server-side caching, state management in RSC, serialization, error boundaries, and best practices for React on Vercel. Do not use for backend logic outside React, non-React UI frameworks, or general React development that doesn't involve SSR or RSC.
 - `../app/DESIGN_SYSTEM.md` — ACTIVATE WHENEVER creating, modifying, or styling any React UI components, layouts, or pages. This skill enforces the strict POS Generator SaaS design system. You MUST override default Tailwind or Shadcn styles with the specific hex codes, typography sizes, rounded corners, and layout spacings defined in the project's Design System Rules. Never use generic styling if a specific rule exists in the design system.
 - `../app/DATABASE_SCHEMA.md` — ACTIVATE WHENEVER creating, modifying, or styling any database tables, columns, relationships, or migrations. This skill enforces the strict POS Generator SaaS database schema. You MUST follow the database schema defined in the project's Database Schema Rules. Never create or modify database tables without following the database design rules.
+- `../app/SYSTEM_ARCHITECTURE.md` — ACTIVATE WHENEVER scaffolding new features, creating directories, adding new controllers, services, or frontend pages. This skill enforces the strict Modern Monolith architecture. You MUST ensure Backend logic goes into the Service Layer (thin controllers) and Frontend code strictly adheres to the Core vs Features isolation pattern.
 
 ## Conventions
 
@@ -306,5 +307,23 @@ When the `pos-design-system` skill is activated or when writing any UI code, you
 - **Cards:** Radius `rounded-xl` (12px) or `rounded-2xl` (16px) using `bg-card border-border text-card-foreground`. Product images inside cards must have top-rounded corners (`rounded-t-xl`).
 - **Inputs & Forms:** Radius `rounded-md` (4px), `bg-background border-input`. Placeholder text must use `placeholder:text-muted-foreground`.
 - **Badges:** Full pill radius (`rounded-full`), padded (`px-2 py-0.5`). Status badges should use tinted backgrounds with primary text (e.g., `bg-primary/10 text-primary`).
+
+=== pos-system-architecture rules ===
+
+# POS Generator SaaS System Architecture
+
+When the `pos-system-architecture` skill is activated or when organizing code, you MUST strictly adhere to the following architectural standards:
+
+## 1. Backend: Strict Service Layer
+
+- **No Fat Controllers:** Controllers must ONLY validate requests (via FormRequests), call a Service class, and return an Inertia response.
+- **Service Isolation:** All business logic, database transactions, and complex calculations MUST reside in `app/Services/`.
+- **Enums & Types:** Use PHP Enums (`app/Enums/`) for static values (e.g., `StoreStatus::ACTIVE`). Hardcoded strings are forbidden. Use `declare(strict_types=1);` and constructor property promotion.
+
+## 2. Frontend: Core & Features Separation
+
+- **Directory Rules:** Place UI elements, utilities, and config in `resources/js/Core/`. Place domain-specific logic (e.g., Cashier, Auth) in `resources/js/Features/`. `Core/` files MUST NEVER import from `Features/`.
+- **Routing:** NEVER hardcode URLs. Always use Laravel Wayfinder (`wayfinder:generate`) typed functions imported from `@/actions/` or `@/routes/`.
+- **State & Forms:** Use Inertia Props and `useHttp` for server state. Use Zustand for global client state (e.g., Cart). All forms must use `react-hook-form` + Zod schemas located within their specific Feature folder.
 
 </laravel-boost-guidelines>
