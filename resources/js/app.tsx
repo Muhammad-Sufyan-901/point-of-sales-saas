@@ -1,4 +1,5 @@
 import { createInertiaApp } from '@inertiajs/react';
+import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot, hydrateRoot } from 'react-dom/client';
 import { TooltipProvider } from '@/Core/Components/ui/tooltip';
 
@@ -6,6 +7,7 @@ const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
+    resolve: (name) => resolvePageComponent(`./${name}.tsx`, import.meta.glob('./**/**/*.tsx')) as any,
     progress: {
         color: '#4B5563',
     },
