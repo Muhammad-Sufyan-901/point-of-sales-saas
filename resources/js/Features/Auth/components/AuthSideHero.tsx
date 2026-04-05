@@ -35,7 +35,7 @@ export function AuthSideHero(): React.JSX.Element {
           </Text>
         </Heading>
 
-        <Text className="mb-8 max-w-md text-[18px] leading-relaxed font-medium text-slate-300">
+        <Text className="mb-8 max-w-md text-[16px] leading-relaxed font-medium text-slate-300">
           Hasilkan Point of Sales khusus untuk toko Anda dalam hitungan detik.
           Kelola produk, pantau transaksi real-time, dan tingkatkan penjualan
           dari satu platform terpusat.
