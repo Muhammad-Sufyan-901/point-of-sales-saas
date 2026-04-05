@@ -1,6 +1,6 @@
-import { router } from "@inertiajs/react";
-import { useState } from "react";
-import type { RegisterFormValues } from "../schemas/auth.schema";
+import { router } from '@inertiajs/react';
+import { useState } from 'react';
+import type { RegisterFormValues } from '../schemas/auth.schema';
 
 export function useRegister() {
   const [isPending, setIsPending] = useState(false);
@@ -9,10 +9,20 @@ export function useRegister() {
   const mutate = (data: RegisterFormValues) => {
     setIsPending(true);
     setError(null);
-    router.post("/register", data, {
+    router.post('/register', data, {
       onError: (err) => {
         setIsPending(false);
-        setError({ response: { data: { message: err.name || err.email || err.password || "Registration failed. Please check your details." } } });
+        setError({
+          response: {
+            data: {
+              message:
+                err.name ||
+                err.email ||
+                err.password ||
+                'Registration failed. Please check your details.',
+            },
+          },
+        });
       },
       onFinish: () => setIsPending(false),
     });
