@@ -2,13 +2,18 @@
 
 namespace App\Models;
 
+use Database\Factories\TransactionItemFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable(['product_name', 'price', 'quantity', 'subtotal'])]
 class TransactionItem extends Model
 {
+    /** @use HasFactory<TransactionItemFactory> */
+    use HasFactory;
+
     /**
      * @return BelongsTo<Transaction, $this>
      */
