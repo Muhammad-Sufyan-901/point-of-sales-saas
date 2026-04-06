@@ -12,6 +12,8 @@
   },
   "iconLibrary": "lucide",
   "rtl": false,
+  "menuColor": "default",
+  "menuAccent": "bold",
   "aliases": {
     "components": "@/Core/Components",
     "utils": "@/Core/Utils/utils",
@@ -19,7 +21,7 @@
     "lib": "@/Core/Utils",
     "hooks": "@/Core/Hooks"
   },
-  "menuColor": "default",
-  "menuAccent": "bold",
-  "registries": {}
+  "registries": {
+    "@react-bits": "https://reactbits.dev/r/{name}.json"
+  }
 }
