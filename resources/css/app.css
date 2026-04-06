@@ -195,3 +195,15 @@
         letter-spacing: var(--tracking-normal);
     }
 }
+
+@utility primary-gradient-button {
+    background-image: linear-gradient(to right, #0066ff 0%, #3b82f6 51%, #0066ff 100%);
+    background-size: 200% auto;
+    transition: all 0.5s ease;
+    box-shadow: 0 8px 20px rgba(0, 102, 255, 0.25);
+    
+    &:hover {
+        background-position: right center;
+        box-shadow: 0 8px 25px rgba(0, 102, 255, 0.35);
+    }
+}

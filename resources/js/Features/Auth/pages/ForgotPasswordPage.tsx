@@ -106,7 +106,7 @@ export default function ForgotPasswordPage() {
           <Button
             type="submit"
             disabled={isPending || isSuccess}
-            className="flex h-auto w-full items-center justify-center rounded-md border-0 bg-linear-to-r from-blue-600 to-blue-500 px-4 py-3 text-[15px] font-bold text-white shadow-[0_8px_20px_rgba(37,99,235,0.25)] hover:to-blue-600 disabled:opacity-70"
+            className="group flex h-auto w-full items-center justify-center rounded-md border-0 primary-gradient-button px-4 py-3 text-[15px] font-bold text-white hover:scale-[102%] disabled:opacity-70"
           >
             {isPending ? 'Mengirim...' : 'Kirim Link Reset Password'}
             {!isPending && (

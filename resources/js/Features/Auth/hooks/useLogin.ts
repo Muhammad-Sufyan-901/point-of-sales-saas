@@ -1,25 +1,26 @@
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
+import type { ApiErrorResponse } from '@/Core/Types/api.types';
 import type { LoginFormValues } from '../schemas/auth.schema';
 
 export function useLogin() {
   const [isPending, setIsPending] = useState(false);
-  const [error, setError] = useState<any>(null);
+  const [error, setError] = useState<ApiErrorResponse | null>(null);
 
   const mutate = (data: LoginFormValues) => {
     setIsPending(true);
     setError(null);
+
     router.post('/login', data, {
       onError: (err) => {
         setIsPending(false);
-        // Map Inertia error to match the structure expected by the original component
         setError({
           response: {
             data: {
               message:
                 err.email ||
                 err.password ||
-                'Login failed. Please check your credentials.',
+                'Gagal login. Silahkan periksa kembali kredensial Anda.',
             },
           },
         });
