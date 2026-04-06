@@ -45,6 +45,7 @@ This project has domain-specific skills available. You MUST activate the relevan
 - `../app/DATABASE_SCHEMA.md` — ACTIVATE WHENEVER creating, modifying, or styling any database tables, columns, relationships, or migrations. This skill enforces the strict POS Generator SaaS database schema. You MUST follow the database schema defined in the project's Database Schema Rules. Never create or modify database tables without following the database design rules.
 - `../app/SYSTEM_ARCHITECTURE.md` — ACTIVATE WHENEVER scaffolding new features, creating directories, adding new controllers, services, or frontend pages. This skill enforces the strict Modern Monolith architecture. You MUST ensure Backend logic goes into the Service Layer (thin controllers) and Frontend code strictly adheres to the Core vs Features isolation pattern.
 - `pos-component-standards` — ACTIVATE WHENEVER generating, modifying, or refactoring React pages and components. This skill enforces the strict usage of common primitive UI components over native HTML tags to maintain design consistency and structural integrity across the frontend.
+- `ui-ux-pro-max` — ACTIVATE WHENEVER creating, modifying, or styling any UI components, layouts, or pages. This skill enforces the strict UI/UX Pro Max design system. You MUST override default Tailwind or Shadcn styles with the specific hex codes, typography sizes, rounded corners, and layout spacings defined in the project's Design System Rules. Never use generic styling if a specific rule exists in the design system.
 
 ## Conventions
 
