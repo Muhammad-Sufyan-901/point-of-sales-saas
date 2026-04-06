@@ -44,6 +44,7 @@ This project has domain-specific skills available. You MUST activate the relevan
 - `../app/DESIGN_SYSTEM.md` — ACTIVATE WHENEVER creating, modifying, or styling any React UI components, layouts, or pages. This skill enforces the strict POS Generator SaaS design system. You MUST override default Tailwind or Shadcn styles with the specific hex codes, typography sizes, rounded corners, and layout spacings defined in the project's Design System Rules. Never use generic styling if a specific rule exists in the design system.
 - `../app/DATABASE_SCHEMA.md` — ACTIVATE WHENEVER creating, modifying, or styling any database tables, columns, relationships, or migrations. This skill enforces the strict POS Generator SaaS database schema. You MUST follow the database schema defined in the project's Database Schema Rules. Never create or modify database tables without following the database design rules.
 - `../app/SYSTEM_ARCHITECTURE.md` — ACTIVATE WHENEVER scaffolding new features, creating directories, adding new controllers, services, or frontend pages. This skill enforces the strict Modern Monolith architecture. You MUST ensure Backend logic goes into the Service Layer (thin controllers) and Frontend code strictly adheres to the Core vs Features isolation pattern.
+- `pos-component-standards` — ACTIVATE WHENEVER generating, modifying, or refactoring React pages and components. This skill enforces the strict usage of common primitive UI components over native HTML tags to maintain design consistency and structural integrity across the frontend.
 
 ## Conventions
 
@@ -109,7 +110,7 @@ This project has domain-specific skills available. You MUST activate the relevan
 
 - Execute PHP in app context for debugging and testing code. Do not create models without user approval, prefer tests with factories instead. Prefer existing Artisan commands over custom tinker code.
 - Always use single quotes to prevent shell expansion: `php artisan tinker --execute 'Your::code();'`
-    - Double quotes for PHP strings inside: `php artisan tinker --execute 'User::where("active", true)->count();'`
+  - Double quotes for PHP strings inside: `php artisan tinker --execute 'User::where("active", true)->count();'`
 
 === php rules ===
 
@@ -325,5 +326,43 @@ When the `pos-system-architecture` skill is activated or when organizing code, y
 - **Directory Rules:** Place UI elements, utilities, and config in `resources/js/Core/`. Place domain-specific logic (e.g., Cashier, Auth) in `resources/js/Features/`. `Core/` files MUST NEVER import from `Features/`.
 - **Routing:** NEVER hardcode URLs. Always use Laravel Wayfinder (`wayfinder:generate`) typed functions imported from `@/actions/` or `@/routes/`.
 - **State & Forms:** Use Inertia Props and `useHttp` for server state. Use Zustand for global client state (e.g., Cart). All forms must use `react-hook-form` + Zod schemas located within their specific Feature folder.
+
+=== pos-component-standards rules ===
+
+# POS Generator SaaS Component Standards
+
+When the `pos-component-standards` skill is activated or when writing any React JSX/TSX code, you MUST NEVER use native HTML tags for basic layout and typography. You MUST exclusively use the custom primitive components located in the `Core/Components/common/` (or equivalent common) directory.
+
+Strictly enforce the following element replacements:
+
+1. **Layout & Wrappers:** Use `<Box>` instead of native `<div>`, `<section>`, `<article>`, or `<main>` tags.
+2. **Typography (Headings):** Use `<Heading level={1 | 2 | 3 | 4 | 5 | 6}>` instead of native `<h1>` through `<h6>` tags.
+3. **Containers:** Use `<Container>` instead of creating a `<div>` with `.container` classes or manual max-width wrapper styling.
+4. **Typography (Paragraphs/Inline):** Use `<Text>` instead of native `<p>` or `<span>` tags.
+5. **Media:** Use `<Image>` instead of the native `<img>` tag.
+
+**Example of INCORRECT code:**
+
+```tsx
+<div className="container mx-auto">
+  <div>
+    <h1>Welcome</h1>
+    <p>Please login to continue.</p>
+    <img src="/logo.png" alt="Logo" />
+  </div>
+</div>
+```
+
+**Example of CORRECT code:**
+
+```tsx
+<Container>
+  <Box>
+    <Heading level={1}>Welcome</Heading>
+    <Text>Please login to continue.</Text>
+    <Image src="/logo.png" alt="Logo" />
+  </Box>
+</Container>
+```
 
 </laravel-boost-guidelines>
