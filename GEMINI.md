@@ -316,17 +316,17 @@ When the `pos-design-system` skill is activated or when writing any UI code, you
 
 When the `pos-system-architecture` skill is activated or when organizing code, you MUST strictly adhere to the following architectural standards:
 
-## 1. Backend: Strict Service Layer
-
-- **No Fat Controllers:** Controllers must ONLY validate requests (via FormRequests), call a Service class, and return an Inertia response.
-- **Service Isolation:** All business logic, database transactions, and complex calculations MUST reside in `app/Services/`.
-- **Enums & Types:** Use PHP Enums (`app/Enums/`) for static values (e.g., `StoreStatus::ACTIVE`). Hardcoded strings are forbidden. Use `declare(strict_types=1);` and constructor property promotion.
+## 1. Backend: Action-Based Architecture & DTOs
+- **Flow:** Controller -> DTO -> Action -> (Optional Service).
+- **Thin Controllers:** Controllers must ONLY validate requests, map data into a DTO, call a specific Action class, and return an Inertia response.
+- **Actions (`app/Actions/`):** All internal business logic, database transactions, and calculations MUST reside here. One class = One responsibility (e.g., `CreateStoreAction`).
+- **DTOs (`app/DTOs/`):** Use PHP 8.2 readonly classes to pass strongly-typed data between Controllers and Actions. Never pass raw arrays to Actions.
+- **Services (`app/Services/`):** ONLY use Services for external/third-party integrations (e.g., `PaymentGatewayService`). Do NOT put internal business logic here.
 
 ## 2. Frontend: Core & Features Separation
-
-- **Directory Rules:** Place UI elements, utilities, and config in `resources/js/Core/`. Place domain-specific logic (e.g., Cashier, Auth) in `resources/js/Features/`. `Core/` files MUST NEVER import from `Features/`.
-- **Routing:** NEVER hardcode URLs. Always use Laravel Wayfinder (`wayfinder:generate`) typed functions imported from `@/actions/` or `@/routes/`.
-- **State & Forms:** Use Inertia Props and `useHttp` for server state. Use Zustand for global client state (e.g., Cart). All forms must use `react-hook-form` + Zod schemas located within their specific Feature folder.
+- **Directory Rules:** Place UI elements and utilities in `resources/js/Core/`. Place domain-specific logic in `resources/js/Features/[feature-name]/` (structured with components, hooks, layouts, pages, schemas, index.ts).
+- **Component Standards:** ALWAYS replace native HTML tags with Core common primitives: `<div>` -> `<Box>`, `<p>/<span>` -> `<Text>`, `<h1>-<h6>` -> `<Heading>`, `<img>` -> `<Image>`.
+- **Routing:** NEVER hardcode URLs. Always use Laravel Wayfinder (`wayfinder:generate`) functions imported from `@/actions/` or `@/routes/`.
 
 === pos-component-standards rules ===
 

@@ -1,82 +1,97 @@
 # System Architecture & Best Practices: POS Generator SaaS
 
 **Target Audience:** Fullstack Developers, AI Coding Agents
-**Architecture Type:** Modern Monolith (Service Layer Backend + Feature-Based Frontend)
+**Architecture Type:** Modern Monolith (Action-Based Backend + Feature-Based Frontend)
 
 ## 1. Concept of Communication (The Bridge)
 
 This project adopts a **Modern Monolith** architecture. Instead of building a fully decoupled REST API and SPA frontend, the system relies on a tightly integrated bridge:
 
-- **Backend (Laravel 13):** Acts as the main engine. This layer handles all database interactions, strict business logic via the Service Layer, and routing definitions.
+- **Backend (Laravel 13):** Acts as the main engine. This layer handles all database interactions, strict business logic via Action classes, external integrations via Services, and routing definitions.
 - **Frontend (React 19):** Acts purely as the presentation and interaction layer (View).
-- **The Bridge (Inertia.js v3):** Connects Laravel and React without full page reloads. Laravel Controllers return `Inertia::render()`, passing data directly to React components as props. For standalone client-side requests (like background fetches), the system uses Inertia v3's built-in `useHttp` client.
+- **The Bridge (Inertia.js v3):** Connects Laravel and React without full page reloads. Laravel Controllers return `Inertia::render()`, passing data directly to React components as props. For standalone client-side requests, the system uses Inertia v3's built-in `useHttp` client.
 
 ---
 
-## 2. Backend Architecture: Strict Service Layer Pattern
+## 2. Backend Architecture: Action-Based Architecture
 
-The backend strictly adheres to the **Service Layer Pattern** to prevent "Fat Controllers". Controllers must remain thin, delegating all complex calculations, database transactions, and business rules to dedicated Service classes.
+To ensure extreme scalability and separation of concerns, the backend strictly uses an **Action-Based Architecture** combined with Data Transfer Objects (DTOs). The "Fat Service" anti-pattern is strictly prohibited.
 
-### 2.1 Directory Structure (`app/`)
+### 2.1 The Standard Workflow
+
+1. **HTTP Request** is validated by `app/Http/Requests` (FormRequest).
+2. **Controller** maps the validated array into a strongly-typed `DTO`.
+3. **Controller** passes the `DTO` into a specific **Action** class.
+4. **Action** executes the exact business logic (Database transactions, etc.). If external APIs are needed, the Action calls a **Service**.
+5. **Action** returns the result to the Controller, which returns an Inertia response.
+
+### 2.2 Directory Structure (`app/`)
 
 ```text
 app/
-├── Enums/                    # [MANDATORY] Stores static data (e.g., StoreStatus, UserRole).
+├── Actions/                  # 🧠 BUSINESS LOGIC: Single responsibility classes.
+│   ├── Auth/                 # Fortify auth actions (CreateNewUser, etc.)
+│   ├── Tenant/               # e.g., CreateStoreAction, ApproveStoreAction
+│   └── Cashier/              # e.g., ProcessCheckoutAction
+├── DTOs/                     # 📦 DATA CONTRACTS: Strongly typed data wrappers.
+│   └── Tenant/               # e.g., CreateStoreDTO (readonly classes)
+├── Enums/                    # 🏷️ STATIC DATA: e.g., StoreStatus, UserRole.
 ├── Http/
-│   ├── Controllers/          # Thin Controllers: Receives request, calls Service, returns Response.
-│   └── Requests/             # FormRequests: Handles all input validation before reaching Controller.
-├── Models/                   # Eloquent ORM Models with strict relationship definitions.
-└── Services/                 # 🧠 THE CORE: Contains all business logic.
-    ├── TenantService.php     # Logic for store registration, approval, and suspension.
-    └── CashierService.php    # Logic for cart calculations, stock deductions, and checkout.
+│   ├── Controllers/          # 🚏 TRAFFIC COPS: Thin controllers. Only maps Request -> DTO -> Action.
+│   └── Requests/             # 🛡️ VALIDATION: Handles raw HTTP input validation.
+├── Models/                   # 🗄️ ORM: Eloquent Models with strict relationships.
+└── Services/                 # 🔌 EXTERNAL VENDORS: Strict third-party integrations only.
+    └── PaymentGatewayService.php # Deals with Xendit/Midtrans, NO internal business logic.
 ```
 
-### 2.2 Backend Best Practices
+### 2.3 Backend Best Practices
 
-- **Strict Typing & PHP 8.4:** Always use `declare(strict_types=1);` at the top of every PHP file. Use Constructor Property Promotion for dependency injection (e.g., `public function __construct(private CashierService $cashierService) {}`).
-- **Thin Controllers:** A controller method should ideally only contain 3-4 lines of code: validate request, call service, return response.
-- **Authentication:** Use **Laravel Fortify** as the headless authentication backend. Do not write custom auth controllers; leverage Fortify's built-in actions like `CreateNewUser` and `UpdateUserProfileInformation`.
-- **No Magic Strings:** Never use hardcoded strings for statuses. Always use PHP Enums from the `app/Enums/` directory.
-- **Testing:** Strictly use **Pest v4**. Every Service class method and critical Controller action must have a corresponding feature test using the `it()` and `expect()` syntax. Run tests via `php artisan test --compact`.
-- **Formatting:** Always run `vendor/bin/pint --dirty --format agent` to enforce code styling standards before committing.
+- **Single Responsibility Actions:** An Action class must do exactly one thing (usually containing a single `execute()` method).
+- **Immutable DTOs:** Always use PHP 8.2 `readonly class` for DTOs to ensure data cannot be mutated during transit.
+- **Strict Typing:** Always use `declare(strict_types=1);` at the top of every PHP file. Use Constructor Property Promotion for dependency injection.
+- **Authentication:** Use **Laravel Fortify** as the headless authentication backend. Inject custom Actions (like `CreateStoreAction`) directly into Fortify's `CreateNewUser` action.
+- **Testing:** Strictly use **Pest v4**. Every Action class must have a corresponding feature/unit test.
 
 ---
 
 ## 3. Frontend Architecture: Feature-Based (Core & Features)
 
-The React frontend completely separates foundational/global code from business-specific domain code. This prevents spaghetti code and ensures high maintainability as the SaaS platform grows.
+The React frontend completely separates foundational/global code (`Core`) from business-specific domain code (`Features`).
 
 ### 3.1 Directory Structure (`resources/js/`)
 
 ```text
 resources/js/
 ├── Core/                     # ⚙️ FOUNDATION: Feature-agnostic global setups.
-│   ├── Components/           # Dumb UI components (Tailwind v4 / Shadcn). No business logic!
+│   ├── Components/           # Dumb UI components (Tailwind v4 / Shadcn primitives).
+│   │   └── common/           # Custom primitives (Box, Text, Heading, Container, Image).
+│   │   └── ui/               # Custom shadcn UI components (Card, Button, Input, etc).
 │   ├── Config/               # Global configurations and constants.
-│   ├── Layouts/              # Global layout wrappers (e.g., AppLayout, GuestLayout).
 │   ├── Store/                # Global UI client state (e.g., useThemeStore.ts using Zustand).
 │   ├── Types/                # Global TypeScript interfaces.
 │   └── Utils/                # Pure helper functions (e.g., formatCurrency, Tailwind cn()).
 │
 ├── Features/                 # 📦 BUSINESS DOMAINS: Strict isolation per feature.
-│   ├── Auth/                 # Auth UI, forms, and validation schemas.
-│   ├── Cashier/              # POS components (ProductGrid), Zustand Cart store, and Cashier Types.
-│   └── TenantManagement/     # Super Admin components (TenantTable, ApprovalModal).
+│   ├── Auth/                 # (Example Feature Module)
+│   │   ├── components/       # Presentational components specific to Auth (e.g., AuthSideHero.tsx)
+│   │   ├── hooks/            # Feature-specific hooks (e.g., useLogin.ts, useRegister.ts)
+│   │   ├── layouts/          # Feature-specific layouts (e.g., AuthLayout.tsx)
+│   │   ├── pages/            # Smart components / Inertia entry points (e.g., LoginPage.tsx)
+│   │   ├── schemas/          # Zod validation schemas (e.g., auth.schema.ts)
+│   │   └── index.ts          # Public API export (Barrel file) for the Auth feature.
+│   └── Cashier/              # POS components, Zustand Cart store, Cashier Types, etc.
 │
-├── Pages/                    # 📍 INERTIA ENTRY POINTS: Called directly by Laravel Routes.
-│   ├── Auth/Login.tsx
-│   └── Cashier/Index.tsx     # Smart components that assemble pieces from Features/.
-│
+├── Pages/                    # 📍 INERTIA ENTRY POINTS (Optional Router wrapper)
 └── app.tsx                   # Main React 19 & Inertia v3 initialization.
 ```
 
 ### 3.2 Frontend Best Practices
 
-- **Strict Feature Isolation:** Files inside `Core/` MUST NEVER import anything from `Features/`. Each domain inside `Features/` must be self-contained and avoid importing from other features whenever possible.
-- **Routing (Laravel Wayfinder):** NEVER hardcode API or page URLs in React (e.g., `href="/login"`). **ALWAYS** use typed functions generated by Laravel Wayfinder (`wayfinder:generate`) imported from `@/actions/` or `@/routes/` (e.g., `route('login').url()`).
-- **State Management Separation:**
-    - **Server State:** Handled natively by Inertia Props. For standalone background requests, use Inertia v3's `useHttp` hook (Axios is no longer used in this stack).
-    - **Client State:** Use **Zustand** exclusively for persistent UI state (e.g., the Shopping Cart in the Cashier feature or Theme toggles). Do not use React Context or `useState` for complex global state.
-- **Form Handling:** All forms MUST use `react-hook-form` integrated with `@hookform/resolvers/zod`. Zod validation schemas must be stored inside their respective feature folders (e.g., `Features/Auth/Schemas/loginSchema.ts`).
-- **Inertia v3 UX Features:** Leverage `Inertia::defer()` for heavy data loads with UI skeleton loading, and utilize optimistic updates for the POS cart to ensure instant response times on the client side.
-- **Styling:** Use Tailwind CSS v4 utility classes. Extract highly reusable UI components to `Core/Components/` to keep page files clean.
+- **Strict Feature Isolation:** Files inside `Core/` MUST NEVER import anything from `Features/`. Each domain inside `Features/` must be self-contained.
+- **Barrel Pattern:** Use `index.ts` inside a feature folder to expose only the necessary components/hooks to the rest of the application.
+- **Component Standards:** NEVER use native HTML tags for basic layout and typography. Exclusively use custom primitive components from `Core/Components/common/` (e.g., replace `<div>` with `<Box>`, `<p>` with `<Text>`, `<h1>` with `<Heading>`).
+- **Routing (Laravel Wayfinder):** NEVER hardcode API or page URLs in React. **ALWAYS** use typed functions generated by Laravel Wayfinder (`wayfinder:generate`) imported from `@/actions/` or `@/routes/`.
+- **State Management:**
+  - **Server State:** Handled natively by Inertia Props or Inertia v3's `useHttp` hook.
+  - **Client State:** Use **Zustand** exclusively for persistent UI state. Do not use React Context or `useState` for complex global state.
+- **Form Handling:** All forms MUST use `react-hook-form` integrated with `@hookform/resolvers/zod`. Zod schemas must reside in the feature's `schemas/` folder.
