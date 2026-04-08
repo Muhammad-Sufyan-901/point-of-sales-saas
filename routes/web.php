@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\LandingPageController;
+use App\Http\Controllers\Marketing\LandingPageController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
