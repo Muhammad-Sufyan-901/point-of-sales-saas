@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
 use Laravel\Fortify\Contracts\LoginResponse;
 use Laravel\Fortify\Contracts\RegisterResponse;
@@ -58,6 +59,25 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::redirectUserForTwoFactorAuthenticationUsing(RedirectIfTwoFactorAuthenticatable::class);
+
+        Fortify::loginView(function () {
+            return Inertia::render('Features/Auth/pages/LoginPage');
+        });
+
+        Fortify::registerView(function () {
+            return Inertia::render('Features/Auth/pages/RegisterPage');
+        });
+
+        Fortify::requestPasswordResetLinkView(function () {
+            return Inertia::render('Features/Auth/pages/ForgotPasswordPage');
+        });
+
+        Fortify::resetPasswordView(function (Request $request) {
+            return Inertia::render('Features/Auth/pages/ResetPasswordPage', [
+                'token' => $request->route('token'),
+                'email' => $request->email,
+            ]);
+        });
 
         RateLimiter::for('login', function (Request $request) {
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
