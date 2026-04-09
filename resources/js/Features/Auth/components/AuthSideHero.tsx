@@ -27,7 +27,7 @@ export function AuthSideHero(): React.JSX.Element {
       {/* Hero Content */}
       <Box className="relative z-10 mt-8 w-full max-w-2xl">
         <Box className="mb-8 inline-flex items-center space-x-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 shadow-sm backdrop-blur-md">
-          <Box className="h-2.5 w-2.5 rounded-full bg-blue-500"></Box>
+          <Box className="h-2.5 w-2.5 rounded-full bg-blue-500" />
           <Text className="text-xs font-semibold tracking-wide text-slate-300">
             Sistem Point of Sales berbasis Multi-Tenant
           </Text>
@@ -43,7 +43,7 @@ export function AuthSideHero(): React.JSX.Element {
             colors={['#1d4ed8', '#3b82f6', '#0066ff', '#818cf8']}
             animationSpeed={6}
             showBorder={false}
-            className="text-[64px] font-extrabold!"
+            className="mt-2 text-[64px] font-extrabold!"
           >
             Untuk Setiap Cabang Anda.
           </GradientText>
