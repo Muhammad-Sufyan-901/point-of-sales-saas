@@ -9,6 +9,6 @@ class LandingPageController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Features/Landing/pages/WelcomePage');
+        return Inertia::render('Features/Marketing/pages/LandingPage');
     }
 }
